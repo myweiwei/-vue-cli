@@ -11,7 +11,7 @@ import { Tabbar, TabItem } from 'mint-ui';
 Vue.component(Tabbar.name, Tabbar);
 Vue.component(TabItem.name, TabItem);
 /* eslint-disable no-new */
-
+import { link } from 'fs';
 new Vue({
   el: '#app',
   router,
