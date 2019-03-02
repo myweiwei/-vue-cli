@@ -12,48 +12,56 @@
             </div>
             <div class='youhui'>
                 <div v-if='shopInfo.supports'>
-                    <img src="../image/decrease_1@2x.png" alt="">
+                    <img :src='"../image/img"+shopInfo.supports[0].type+".png"' alt="">
                     <span v-html='shopInfo.supports[0].description'></span>
                 </div>
                <p class='more' @click='showMore()' v-if='shopInfo.supports'>{{shopInfo.supports.length}}个<i class='iconfont icon-jiantouyou' style='font-size:12px;'></i></p>
             </div>
         </div>
         <div @click='showMore()'>
-            <div class='info' >
+            <div class='info' @click='showMore()'>
                 <span class='info_name'>公告</span>
                 <span class='info_content' v-html='shopInfo.bulletin'></span>
                 <span class='info_more'><i class='iconfont icon-jiantouyou' style='font-size:12px;'></i></span>
             </div>
         </div>
-        <div class='details' v-show='detailShow' >
-            <div id="wrap">
-                <div id="main" class="clearfix">
-                    <div id="content">
-                        <div class='head'>
-                            <span v-html='shopInfo.name'></span>
+        <transition  name='fade'>
+            <div class='details' v-show='detailShow'>
+                <div id="wrap">
+                    <div id="main" class="clearfix">
+                        <div id="content">
+                            <div class='head'>
+                                <span v-html='shopInfo.name'></span>
+                            </div>
+                            <div class='img'>
+                                <star :score='shopInfo.score'></star>
+                            </div>
+                            <div class='name'>
+                                <div class='line'></div>
+                                <div class='title'>优惠信息</div>
+                                <div class='line'></div>
+                            </div>
+                            <div class='youhuiInfo'>
+                                <ul>
+                                    <li v-for='(item,index) in supports' :key='index'><img :src='"../image/img"+item["type"]+".png"' alt=""><span>{{item['description']}}</span></li>
+                                </ul>
+                            </div>
+                            <div class='name'>
+                                <div class='line'></div>
+                                <div class='title'>商家公告</div>
+                                <div class='line'></div>
+                            </div>
+                            <div class='gonggaoInfo'>
+                                {{shopInfo.bulletin}}
+                            </div>
                         </div>
-                        <div class='img'>
-                            <star :score='shopInfo.score'></star>
-                        </div>
-                        <div class='name'>
-                            <div class='line'></div>
-                            <div class='title'>优惠信息</div>
-                            <div class='line'></div>
-                        </div>
-                        <!-- <div class='youhuiInfo'>
-                            <ul>
-                                <li v-for='item in shopInfo.supports'>{{item.decoration}}</li>
-
-                            </ul>
-                        </div> -->
                     </div>
                 </div>
+                <div id="footer">
+                    <i class='iconfont icon-guanbi1' @click='detailShow=!detailShow'></i>
+                </div>
             </div>
-            <div id="footer">
-                <i class='iconfont icon-guanbi1' @click='detailShow=!detailShow'></i>
-            </div>
-        </div>
-        
+        </transition>
     </div>
 </template>
 <script>
@@ -76,6 +84,7 @@ export default {
       shopInfo:{},
       goodInfo:{},
       detailShow:false,
+      supports:[],
     }
   },
   methods:{
@@ -93,18 +102,9 @@ export default {
         if (response.errno === ERR_OK) {
             let data = response.data;
             this.shopInfo=data;
+            this.supports=this.shopInfo.supports;
         }
-        console.log(response.data);
-      }),
-      this.$http.get('/api/goods').then((response) => {
-        response = response.body;
-        if (response.errno === ERR_OK) {
-            let data1 = response.data;
-            this.goodInfo=data1;
-           
-        }
-         console.log(response.data);
-      })
+      });
   },
   components:{
       star
@@ -113,15 +113,10 @@ export default {
   
 </script>
 <style scoped lang="scss">
-  
    $highlight-color: #F90;
    body{
        margin:0!important;
        background:$highlight-color;
-   }
-    *{
-       padding:0;
-       margin:0;
    }
    #header{
        width:100%;
@@ -221,6 +216,7 @@ export default {
        line-height: 30px;
        padding:0 10px;
        vertical-align: middle;
+       z-index: 2;
    }
    .info_name{
        padding:1px 5px;
@@ -274,16 +270,24 @@ export default {
             color:#ff4a4f;
         }
    }
-   .details{
-       position:fixed;
-       top:0;
-       left:0;
-       width:100%;
-       height:100%;
-       overflow-y: auto;
-       background: rgba(7,17,27,0.8);
-       z-index:100;
-       #wrap {
+    .fade-enter-active, .fade-leave-active {
+        transition: opacity .5s;
+        }
+        .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+        opacity: 0;
+        }
+    .details{
+        position:fixed;
+        top:0;
+        left:0;
+        width:100%;
+        height:100%;
+        overflow-y: auto;
+        background: rgba(7,17,27,0.9);
+        z-index:100;
+        transition:all .5s;
+        backdrop-filter:blur(10px);
+        #wrap {
         height: auto;
         min-height: 100%;
         }  
@@ -323,27 +327,27 @@ export default {
             line-height:100px;
             color:#fff;
         }
-    
-   }
-   .name{
-       width:100%;
-       margin-top:10%;
-       display: flex;
-       justify-content: space-between;
-       align-items: center;
-       .line{
-           width:35%;
-           height:1px;
-           background:rgba(255,255,255,.2);
-         
-       }
-       .title{
-           font-size:15px;
-           font-weight:bold;
-           padding:0 2px;
-           color:#fff;
-       }
-   }
+
+    }
+    .name{
+        width:100%;
+        margin-top:10%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        .line{
+            width:35%;
+            height:1px;
+            background:rgba(255,255,255,.2);
+            
+        }
+        .title{
+            font-size:15px;
+            font-weight:bold;
+            padding:0 2px;
+            color:#fff;
+        }
+    }
     
     .clearfix:after {
         content: ".";
@@ -355,6 +359,33 @@ export default {
         
     .clearfix {
         display: inline-block;
+    }
+    .youhuiInfo{
+        color:#fff;
+        margin-top:5%;
+        vertical-align: top;
+        margin-left:5%;
+        li{
+            height:30px;
+            line-height: 30px;
+            font-weight:normal;
+            font-size:12px;
+            vertical-align: top;
+            display: flex;
+            align-items: center;
+            img{
+                width:15px;
+                height:15px;
+                margin-right:2%;
+            }
+        }
+    }
+    .gonggaoInfo{
+        margin-top:5%;
+        font-size:12px;
+        color:#fff;
+        line-height:20px;
+        padding:0 12px;
     }
 </style>
 
