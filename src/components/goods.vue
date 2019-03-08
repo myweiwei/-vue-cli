@@ -12,7 +12,7 @@
                 <li v-for='(item,index) in goodInfo' :key='index' class='goodli goodli-list-hook'>
                     <span class='foodTitle'>{{item.name}}</span>
                     <ul class='foodList'>
-                        <li v-for='(food,index) in item.foods' :key='index' style='display:flex;'>
+                        <li v-for='(food,index) in item.foods' :key='index' style='display:flex;' @click='open(food)'>
                             <div><img :src="food.image" alt=""></div>
                             <div class='foodInfo'>
                                 <span v-html='food.name' class='foodName'></span>
@@ -33,14 +33,16 @@
         </div>
     </div>
     <shopCar :selectFood='selectFood' :deliveryPrice='sellerInfo.deliveryPrice' :minPrice='sellerInfo.minPrice' ref='shop'></shopCar>
+    <foodInfo :foodPage='foodPage' :foodInfoFlag='foodInfoFlag'></foodInfo>
 </div>
 
 
 </template>
 <script>
- import BScroll from 'better-scroll';
- import shopCar from '../components/shopCar.vue'
- import cartControl from '../components/cartControl.vue'
+import BScroll from 'better-scroll';
+import shopCar from '../components/shopCar.vue'
+import cartControl from '../components/cartControl.vue'
+import foodInfo from '../components/food.vue'
 export default {
     data(){
         return{
@@ -51,6 +53,8 @@ export default {
             scrollY:0,
             currentIndex:0,
             sellerInfo:[],
+            foodPage:{},
+            foodInfoFlag:false,
         }
     },
     created(){
@@ -100,10 +104,15 @@ export default {
         },
         cartAdd(el){
             this.$nextTick(() => {
-                //this.$refs.shopCar.dropFunc(el);
                this.$refs.shop.dropFunc(el);
             });
         },
+        open(arg){
+            var me=this;
+            me.foodPage=arg;
+            me.foodInfoFlag=!me.foodInfoFlag;
+            console.log(me.foodInfoFlag);
+        }
         
     },
     
@@ -123,7 +132,8 @@ export default {
     },
     components:{
         shopCar,
-        cartControl
+        cartControl,
+        foodInfo
     },
     watch:{
         'scrollY': {

@@ -1,13 +1,13 @@
 <template>
     <div class='cartControl'>
         <transition name="fade">
-            <span class='btn jianshao' v-if='food.count>0' @click='desCount()'><i class='iconfont icon-line'></i></span>
+            <span class='btn jianshao' v-if='food.count>0' @click.stop.prevent='desCount()'><i class='iconfont icon-line'></i></span>
         </transition>
         <span class='count' v-if='food.count>0'>{{food.count}}</span>
         <transition name='ball'>
 			<div class='ball' v-show='showFlag'></div>
 		</transition>
-        <span class='btn add' @click='addCount()'>+</span>
+        <span class='btn add' @click.stop.prevent='addCount()'>+</span>
     </div>
 </template>
 <script>
@@ -36,6 +36,7 @@ export default {
                 me.food.count++;
             }
             this.$emit('cart-add', event.target);
+            console.log(event.target);
         },
         desCount(){
             var me=this;
